@@ -2,6 +2,14 @@
 partymode backend built with express and socket.io
 
 
+## How to dev?
+
+install with `yarn` \
+run with `yarn run dev` \
+test with `yarn run test` \
+build with `yarn run build`
+
+
 ## note for devs
 - this backend purely serves the functionality to implement the watchroom logic.
 - following functionalities are planned and yet to be implemented:
@@ -13,7 +21,7 @@ partymode backend built with express and socket.io
 - techstack:
   - express
   - socket.io
-  - vanilla react
+  - redis
   
    
  
