@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bergflix. Partymode</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-10">
+    <div id="chatbox" class="my-5 p-2 rounded-md shadow-md ring-2 ring-blue-500">
+    </div>
+    <button onclick="createRoom()">Create Room</button>
+    <div class="flex flex-row">
+        <input type="text" id="roomName" placeholder="Room Name" class="ring-2 ring-red-500 mr-2 rounded-md p-2">
+        <button onclick="joinRoom()">Join Room</button>
+    </div>
+    <script>
+        const socket = io();
+        const chatbox = document.getElementById('chatbox')
+        const createMsg = (msg) => {
+            const el = document.createElement('p');
+            el.innerText = msg
+            el.classList.add('m-2', 'hover:bg-gray-200', 'odd:bg-gray-300')
+            chatbox.appendChild(el);
+        }
+        socket.on("connect", () => {
+            console.log(socket.id); // "G5p5..."
+            createMsg(`👤 Connected as ${socket.id}`);
+        });
+        function createRoom() {
+            createMsg('🔗 Creating Room');
+            socket.emit('create')
+        }
+        socket.on("created", (roomcode) => {
+            createMsg(`➕ Created and joined room ${roomcode}`)
+        })
+        function joinRoom() {
+            const roomName = document.getElementById('roomName').value;
+            createMsg(`🔗 Joining Room ${roomName}`);
+            socket.emit('join', roomName)
+        }
+        socket.on("joined", (roomcode, users) => {
+            createMsg(`➕ Joined room ${roomcode}. Users: ${users}`)
+        })
+        socket.on('error', (err) => {
+            createMsg(`❌ ${err}`)
+        })
+    </script>
+</body>
+
+</html>

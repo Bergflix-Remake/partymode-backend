@@ -20,11 +20,14 @@
   },
   "homepage": "soon",
   "dependencies": {
+    "@redis/json": "^1.0.4",
     "@types/swagger-ui-express": "^4.1.3",
     "cors": "^2.8.5",
     "express": "^4.18.1",
+    "redis": "^4.4.0",
     "socket.io": "^4.5.2",
-    "swagger-ui-express": "^4.5.0"
+    "swagger-ui-express": "^4.5.0",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@swc-node/register": "^1.5.2",
