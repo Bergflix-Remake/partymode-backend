@@ -1,5 +1,3 @@
-import { RedisClientType } from "redis";
-
 export interface IRoomPermissions {
     canPlay: boolean;
     canPause: boolean;
