@@ -1,22 +1,23 @@
-export default {
+import { IRoomPermissions } from "./models/types"
+
+const defaults: {
+    defaults: {
+        room_perms: {
+            user: Partial<IRoomPermissions>,
+            guest: Partial<IRoomPermissions>,
+        },
+    },
+} = {
     defaults: {
         room_perms: {
             user: {
-                canPlay: true,
-                canPause: true,
-                canSkip: true,
-                canAdd: true,
-                canRemove: true,
-                canSync: true,
+                queue: true,
+                video: true,
+                time: true,
             },
-            guest: {
-                canPlay: true,
-                canPause: true,
-                canSkip: true,
-                canAdd: false,
-                canRemove: false,
-                canSync: false,
-            },
+            guest: {},
         }
     }
 }
+
+export default defaults;

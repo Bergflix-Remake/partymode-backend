@@ -20,6 +20,11 @@ Partymode backend built with ![express](https://img.shields.io/badge/-Express-ye
   - [x] Registered uses should have badges shown next to their names (Staff, Patreon, etc)
   - [ ] registered users should have the ability to track who is their favorite watch partner
 
+## Improvements
+
+- [ ] check cb in middleware
+- [ ] use socketio buildin auth for authentication
+
 - techstack:
   - ![express](https://img.shields.io/badge/-Express-yellow?logo=express)
   - ![socket.io](https://img.shields.io/badge/-Socket.IO-gray?logo=socketdotio)
