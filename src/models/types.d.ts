@@ -10,6 +10,7 @@ export interface IRoomPermissions {
   }
   
   export interface IRoom {
+    name: string;
     queue: string[];
     owner: string;
     currentVideo: string;
@@ -24,12 +25,12 @@ export interface IRoomPermissions {
   export interface IUser {
     id: number;
     username: string;
-    email: string;
-    provider: string;
-    confirmed: boolean;
-    blocked: boolean;
-    createdAt: string;
-    updatedAt: string;
+    email?: string;
+    provider?: string;
+    confirmed?: boolean;
+    blocked?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
     admin: boolean;
   }
 

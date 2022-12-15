@@ -44,6 +44,7 @@ export const getRoom = async (roomName: string): Promise<BaseReturn<IRoom>> => {
 export const createRoom = async (roomName: string, owner: string): Promise<BaseReturn<IRoom>> => {
     const db = getRedis();
     const room: IRoom = {
+        name: roomName,
         queue: [],
         owner,
         currentVideo: '',
@@ -51,11 +52,11 @@ export const createRoom = async (roomName: string, owner: string): Promise<BaseR
         playing: false,
         permissions: partymodeConfig.defaults.room_perms,
     };
-    if (!await getUser(owner)) return { error: {
+    if (!(await getUser(owner)).data) return { error: {
         message: 'You cant create a room without being logged in!',
         code: 401,
     } };
-    if (getRoom(roomName)) return { error: {
+    if ((await getRoom(roomName)).data) return { error: {
         message: 'Room already exists!',
         code: 409,
     } };

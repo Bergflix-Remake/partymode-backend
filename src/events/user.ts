@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BaseReturn, IUser } from "../models/types";
+import logger from "../util/logger";
 import { getRedis } from "../util/redis";
 
 /**
@@ -23,7 +24,10 @@ export const getUser = async (socketId: string): Promise<BaseReturn<IUser>> => {
             code: 404,
         }
     };
-    return { data: JSON.parse(userData) as IUser };
+    const user = JSON.parse(userData) as IUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { email, provider, confirmed, blocked, createdAt, updatedAt, ...userWithoutPrivateData } = user;
+    return { data: userWithoutPrivateData }
 }
 
 
@@ -42,15 +46,23 @@ export const getUser = async (socketId: string): Promise<BaseReturn<IUser>> => {
  */
 export const connectUser = async (socketId: string, token: string): Promise<BaseReturn<IUser>> => {
     const db = getRedis();
-    const userData = await axios.get('https://api.bergflix.de/users/me', {
+    const userData = await axios.get('https://api.bergflix.de/api/users/me', {
         headers: {
-            Authorization: `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
         }
-    })
+    }).catch((err) => {
+        logger.error(err);
+        return {
+            status: 500,
+            data: {}
+        }
+    });
     if (userData.status === 200) {
         const user = userData.data;
         await db.set(`users:${socketId}`, JSON.stringify(user));
-        return { data: user }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { email, provider, confirmed, blocked, createdAt, updatedAt, ...userWithoutPrivateData } = user;
+        return { data: userWithoutPrivateData }
     } else {
         return {
             error: {
@@ -69,6 +81,18 @@ export const connectUser = async (socketId: string, token: string): Promise<Base
  */
 export const authenticateUser = async (token: string, socketId: string): Promise<BaseReturn<IUser>> => {
     const user = await getUser(socketId);
-    if (user.data) return { data: user.data };
+    if (user.data) return user;
     return await connectUser(socketId, token);
+}
+
+export const removeUser = async (socketId: string): Promise<BaseReturn<string>> => {
+    const db = getRedis();
+    const res = await db.del(`users:${socketId}`);
+    if (res === 1) return { data: "OK" };
+    return {
+        error: {
+            message: 'User not found!',
+            code: 404,
+        }
+    }
 }

@@ -1,7 +1,7 @@
 import logger from './util/logger';
 import * as socketio from 'socket.io';
 import { joinRoom } from './events/rooms';
-import { authenticateUser, getUser } from './events/user';
+import { authenticateUser, getUser, removeUser } from './events/user';
 
 const io = new socketio.Server(3000);
 
@@ -10,6 +10,7 @@ io.on('connection', (socket) => {
   const leaveAllRooms = async () => {
     for (const room of socket.rooms.keys()) {
       if (room === socket.id) continue;
+      socket.emit('left', { data: room });
       const user = await getUser(socket.id);
       socket.broadcast.to(room).emit('disconnected', { data: { socket: socket.id, user: user.data } });
       socket.leave(room);
@@ -39,6 +40,7 @@ io.on('connection', (socket) => {
   // Disconnect
   socket.on('disconnect', async () => {
     await leaveAllRooms();
+    await removeUser(socket.id);
     logger.info(`Socket ${socket.id} disconnected`);
   })
 

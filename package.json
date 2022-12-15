@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "build": "npx test && tsc",
+    "build": "tsc",
+    "start": "node dist/app.js",
     "dev": "nodemon --watch src src/app.ts",
     "test": "npx jest",
     "lint": "eslint . --ext .ts"
