@@ -8,6 +8,7 @@ import { checkPerms } from './util/perms';
 import { syncRoom } from './events/sync';
 import e from 'express';
 import http from 'http';
+import path from 'path';
 config();
 
 const app = e();
@@ -15,7 +16,7 @@ const server = http.createServer(app);
 
 app.get('/', (req, res) => {
   // serve html from /static
-  res.sendFile(__dirname + '/static/index.html');
+  res.sendFile(path.resolve(__dirname + '/../static/index.html'));
 });
 
 const io = new Server(server);
