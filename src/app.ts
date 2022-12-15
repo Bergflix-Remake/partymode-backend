@@ -2,6 +2,8 @@ import logger from './util/logger';
 import * as socketio from 'socket.io';
 import { joinRoom } from './events/rooms';
 import { authenticateUser, getUser, removeUser } from './events/user';
+import { config } from 'dotenv';
+config();
 
 const io = new socketio.Server(3000);
 
