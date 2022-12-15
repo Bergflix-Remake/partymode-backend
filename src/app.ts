@@ -1,14 +1,24 @@
 import logger from './util/logger';
-import * as socketio from 'socket.io';
+import { Server } from 'socket.io';
 import { joinRoom } from './events/rooms';
 import { authenticateUser, getUser, removeUser } from './events/user';
 import { config } from 'dotenv';
 import { IRoom } from './models/types';
 import { checkPerms } from './util/perms';
 import { syncRoom } from './events/sync';
+import e from 'express';
+import http from 'http';
 config();
 
-const io = new socketio.Server(3000);
+const app = e();
+const server = http.createServer(app);
+
+app.get('/', (req, res) => {
+  // serve html from /static
+  res.sendFile(__dirname + '/static/index.html');
+});
+
+const io = new Server(server);
 
 io.on('connection', (socket) => {
   logger.info(`Socket ${socket.id} connected`);
@@ -33,7 +43,6 @@ io.on('connection', (socket) => {
     return true;
   }
 
-  // Join a room
   socket.on('join', async (roomName: string, callback) => {
     if (!checkCb(callback)) return;
     await leaveAllRooms();
@@ -70,7 +79,7 @@ io.on('connection', (socket) => {
   });
 
   // Sync event
-  socket.on('sync', async (data: Partial<IRoom>, callback) => {
+  socket.on('sync', async (data: Partial<IRoom>, manual?, callback?) => {
     if (!checkCb(callback)) return;
     // Get the room the user is in
     const roomName = await Array.from(socket.rooms.keys())[1];
@@ -82,8 +91,9 @@ io.on('connection', (socket) => {
       callback({ error: err })
       return;
     }
-    socket.to(roomName).emit('sync', { data: room.data });
-    callback({ data: room.data });
+    const newData = { data: { room: room.data, manual } }
+    socket.to(roomName).emit('sync', newData);
+    callback(newData);
   });
 
   // Message event
@@ -96,4 +106,8 @@ io.on('connection', (socket) => {
     socket.to(roomName).emit('message', data);
     callback(data);
   });
+});
+
+server.listen(process.env.PORT, () => {
+  logger.info('Server listening on port 3000');
 });
